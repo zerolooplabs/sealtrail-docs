@@ -1,0 +1,367 @@
+{
+	"info": {
+		"name": "SealTrail API",
+		"description": "SealTrail Developer API — Collection Postman pour tester l'API comme un client.\n\nToutes les requetes utilisent une API key (`stl_xxx`). Les routes management (tenants, keys, billing) se gerent via le Dashboard.\n\n## Setup\n1. Creer un compte sur le Dashboard SealTrail\n2. Creer une organisation + API key\n3. Coller la cle dans la variable `api_key` ci-dessous\n\n## Variables\n- `base_url` : URL de l'API\n- `api_key` : Cle API `stl_xxx` obtenue via le dashboard\n- `event_id` : Auto-rempli par les test scripts\n- `chain_id` : Auto-rempli par les test scripts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://sealtrail-api.fly.dev",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "stl_xxxxx",
+			"type": "string"
+		},
+		{
+			"key": "event_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "chain_id",
+			"value": "",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "Health",
+			"item": [
+				{
+					"name": "Health Check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('API is healthy', function () {",
+									"    pm.response.to.have.status(200);",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.status).to.eql('ok');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Events",
+			"description": "Audit events (API Key required)",
+			"item": [
+				{
+					"name": "Create Event",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Event created', function () {",
+									"    pm.response.to.have.status(201);",
+									"    var json = pm.response.json();",
+									"    pm.expect(json).to.have.property('id');",
+									"    pm.expect(json).to.have.property('hash');",
+									"    pm.expect(json.id).to.match(/^evt_/);",
+									"    // Save event ID",
+									"    pm.collectionVariables.set('event_id', json.id);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"actor\": \"ironman@zerolooplabs.com\",\n\t\"action\": \"test.postman_event\",\n\t\"resource\": \"sealtrail\",\n\t\"context\": {\n\t\t\"source\": \"postman\",\n\t\t\"test\": true\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/events",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "events"]
+						}
+					}
+				},
+				{
+					"name": "Create Event (custom chain)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Event created on custom chain', function () {",
+									"    pm.response.to.have.status(201);",
+									"    var json = pm.response.json();",
+									"    pm.expect(json).to.have.property('id');",
+									"    pm.expect(json).to.have.property('hash');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"actor\": \"ironman@zerolooplabs.com\",\n\t\"action\": \"user.login\",\n\t\"resource\": \"auth-service\",\n\t\"chain\": \"auth-events\",\n\t\"context\": {\n\t\t\"ip\": \"192.168.1.1\",\n\t\t\"userAgent\": \"Postman\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/events",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "events"]
+						}
+					}
+				},
+				{
+					"name": "List Events",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Events listed', function () {",
+									"    pm.response.to.have.status(200);",
+									"    var json = pm.response.json();",
+									"    pm.expect(json).to.have.property('data');",
+									"    pm.expect(json.data).to.be.an('array');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/events",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "events"]
+						}
+					}
+				},
+				{
+					"name": "List Events (with filters)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/events?actor=ironman@zerolooplabs.com&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "events"],
+							"query": [
+								{
+									"key": "actor",
+									"value": "ironman@zerolooplabs.com"
+								},
+								{
+									"key": "action",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "resource",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "chain_id",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								},
+								{
+									"key": "cursor",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Event by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Event retrieved', function () {",
+									"    pm.response.to.have.status(200);",
+									"    var json = pm.response.json();",
+									"    pm.expect(json).to.have.property('id');",
+									"    pm.expect(json).to.have.property('hash');",
+									"    pm.expect(json).to.have.property('actor');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/events/{{event_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "events", "{{event_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Verify Event Hash",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Hash is valid', function () {",
+									"    pm.response.to.have.status(200);",
+									"    var json = pm.response.json();",
+									"    pm.expect(json).to.have.property('valid');",
+									"    pm.expect(json.valid).to.be.true;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/events/{{event_id}}/verify",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "events", "{{event_id}}", "verify"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Chains",
+			"description": "Hash chains (API Key required)",
+			"item": [
+				{
+					"name": "List Chains",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Chains listed', function () {",
+									"    pm.response.to.have.status(200);",
+									"    var json = pm.response.json();",
+									"    pm.expect(json).to.be.an('array');",
+									"    if (json.length > 0) {",
+									"        pm.collectionVariables.set('chain_id', json[0].id);",
+									"    }",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/chains",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "chains"]
+						}
+					}
+				},
+				{
+					"name": "Get Chain Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Chain status retrieved', function () {",
+									"    pm.response.to.have.status(200);",
+									"    var json = pm.response.json();",
+									"    pm.expect(json).to.have.property('id');",
+									"    pm.expect(json).to.have.property('eventCount');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/chain/{{chain_id}}/status",
+							"host": ["{{base_url}}"],
+							"path": ["v1", "chain", "{{chain_id}}", "status"]
+						}
+					}
+				}
+			]
+		}
+	]
+}
