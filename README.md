@@ -46,6 +46,37 @@ Returns `{ "valid": true, "chainIntact": true }` if the event hasn't been tamper
 
 ---
 
+## Official SDK
+
+[![npm](https://img.shields.io/npm/v/sealtrail)](https://www.npmjs.com/package/sealtrail)
+
+Install the official Node.js/TypeScript SDK:
+
+```bash
+npm install sealtrail
+```
+
+```typescript
+import { SealTrail } from "sealtrail";
+
+const st = new SealTrail({ apiKey: "stl_live_..." });
+
+// Log an event
+const event = await st.events.log({
+  actor: "user_123",
+  action: "document.signed",
+  resource: "doc_456",
+});
+
+// Verify integrity
+const result = await st.events.verify(event.id);
+console.log(result.valid); // true
+```
+
+See [SDK documentation](https://sealtrail.dev/docs/sdks/) for full API reference, auto-pagination, error handling, and more.
+
+---
+
 ## Documentation
 
 | Resource | Link |
@@ -55,6 +86,7 @@ Returns `{ "valid": true, "chainIntact": true }` if the event hasn't been tamper
 | Authentication | [sealtrail.dev/docs/authentication](https://sealtrail.dev/docs/authentication/) |
 | Concepts (Hash Chains) | [sealtrail.dev/docs/concepts](https://sealtrail.dev/docs/concepts/) |
 | Error Handling | [sealtrail.dev/docs/error-handling](https://sealtrail.dev/docs/error-handling/) |
+| Node.js SDK | [sealtrail.dev/docs/sdks](https://sealtrail.dev/docs/sdks/) |
 
 ---
 
@@ -75,7 +107,8 @@ Ready-to-use examples in multiple languages:
 
 | Language | Directory |
 |----------|-----------|
-| TypeScript | [`examples/typescript/`](examples/typescript/) |
+| TypeScript (SDK) | [`examples/typescript/sdk-*.ts`](examples/typescript/) |
+| TypeScript (fetch) | [`examples/typescript/`](examples/typescript/) |
 | Python | [`examples/python/`](examples/python/) |
 | cURL | [`examples/curl/`](examples/curl/) |
 
