@@ -130,7 +130,8 @@ Ready-to-use examples in multiple languages:
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/v1/chains` | List all hash chains |
-| `GET` | `/v1/chain/:chainId/status` | Get chain status |
+| `GET` | `/v1/chain/:chainId/status` | Get chain status, API keys, and metadata |
+| `DELETE` | `/v1/chains/:chainId` | Delete a chain and all its events |
 
 ---
 

@@ -51,8 +51,12 @@
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/health",
-							"host": ["{{base_url}}"],
-							"path": ["health"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"health"
+							]
 						}
 					}
 				}
@@ -100,8 +104,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/v1/events",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "events"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"events"
+							]
 						}
 					}
 				},
@@ -140,8 +149,13 @@
 						},
 						"url": {
 							"raw": "{{base_url}}/v1/events",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "events"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"events"
+							]
 						}
 					}
 				},
@@ -172,8 +186,13 @@
 						],
 						"url": {
 							"raw": "{{base_url}}/v1/events",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "events"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"events"
+							]
 						}
 					}
 				},
@@ -189,8 +208,13 @@
 						],
 						"url": {
 							"raw": "{{base_url}}/v1/events?actor=ironman@zerolooplabs.com&limit=10",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "events"],
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"events"
+							],
 							"query": [
 								{
 									"key": "actor",
@@ -252,8 +276,14 @@
 						],
 						"url": {
 							"raw": "{{base_url}}/v1/events/{{event_id}}",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "events", "{{event_id}}"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"events",
+								"{{event_id}}"
+							]
 						}
 					}
 				},
@@ -284,8 +314,161 @@
 						],
 						"url": {
 							"raw": "{{base_url}}/v1/events/{{event_id}}/verify",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "events", "{{event_id}}", "verify"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"events",
+								"{{event_id}}",
+								"verify"
+							]
+						}
+					}
+				},
+				{
+					"name": "Export Events (CSV)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('CSV export received', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('text/csv');",
+									"    pm.expect(pm.response.headers.get('Content-Disposition')).to.include('attachment');",
+									"    pm.expect(pm.response.text()).to.include('id,timestamp,actor');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/events/export?format=csv&after=2026-01-01T00:00:00Z&before=2026-04-01T00:00:00Z",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"events",
+								"export"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "csv"
+								},
+								{
+									"key": "after",
+									"value": "2026-01-01T00:00:00Z"
+								},
+								{
+									"key": "before",
+									"value": "2026-04-01T00:00:00Z"
+								},
+								{
+									"key": "actor",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "action",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "resource",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "chain_id",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Export Events (JSON)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('JSON export received', function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+									"    var json = pm.response.json();",
+									"    pm.expect(json).to.have.property('export');",
+									"    pm.expect(json).to.have.property('data');",
+									"    pm.expect(json.export).to.have.property('count');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/events/export?format=json&after=2026-01-01T00:00:00Z&before=2026-04-01T00:00:00Z",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"events",
+								"export"
+							],
+							"query": [
+								{
+									"key": "format",
+									"value": "json"
+								},
+								{
+									"key": "after",
+									"value": "2026-01-01T00:00:00Z"
+								},
+								{
+									"key": "before",
+									"value": "2026-04-01T00:00:00Z"
+								},
+								{
+									"key": "actor",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "action",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "resource",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "chain_id",
+									"value": "",
+									"disabled": true
+								}
+							]
 						}
 					}
 				}
@@ -324,8 +507,13 @@
 						],
 						"url": {
 							"raw": "{{base_url}}/v1/chains",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "chains"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"chains"
+							]
 						}
 					}
 				},
@@ -356,9 +544,54 @@
 						],
 						"url": {
 							"raw": "{{base_url}}/v1/chain/{{chain_id}}/status",
-							"host": ["{{base_url}}"],
-							"path": ["v1", "chain", "{{chain_id}}", "status"]
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"chain",
+								"{{chain_id}}",
+								"status"
+							]
 						}
+					}
+				},
+				{
+					"name": "Delete Chain",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Chain deleted', function () {",
+									"    pm.response.to.have.status(200);",
+									"    var json = pm.response.json();",
+									"    pm.expect(json.data.deleted).to.be.true;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{api_key}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/chains/{{chain_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"chains",
+								"{{chain_id}}"
+							]
+						},
+						"description": "Permanently delete a chain and all its events. This cannot be undone."
 					}
 				}
 			]
