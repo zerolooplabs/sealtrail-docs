@@ -1,6 +1,6 @@
 # cURL Examples
 
-Replace `stl_live_...` with your actual API key from the [SealTrail Dashboard](https://app.sealtrail.dev).
+Replace `stl_live_...` with your actual API key from the [SealTrail Dashboard](https://console.sealtrail.dev).
 
 ## Log an event
 
@@ -41,6 +41,27 @@ curl "https://api.sealtrail.dev/v1/events/evt_abc123" \
 
 ```bash
 curl "https://api.sealtrail.dev/v1/events/evt_abc123/verify" \
+  -H "Authorization: Bearer stl_live_..."
+```
+
+## Export events (CSV)
+
+```bash
+curl -o audit-export.csv "https://api.sealtrail.dev/v1/events/export?format=csv&after=2026-01-01T00:00:00Z&before=2026-03-18T00:00:00Z" \
+  -H "Authorization: Bearer stl_live_..."
+```
+
+## Export events (JSON)
+
+```bash
+curl "https://api.sealtrail.dev/v1/events/export?format=json&after=2026-01-01T00:00:00Z&before=2026-03-18T00:00:00Z&actor=user_123" \
+  -H "Authorization: Bearer stl_live_..."
+```
+
+## Export events (JSON, with filters)
+
+```bash
+curl "https://api.sealtrail.dev/v1/events/export?format=json&after=2026-01-01T00:00:00Z&before=2026-03-18T00:00:00Z&actor=user_123&action=invoice.approved" \
   -H "Authorization: Bearer stl_live_..."
 ```
 
